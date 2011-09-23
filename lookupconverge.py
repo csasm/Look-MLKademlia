@@ -172,6 +172,7 @@ class LookupConverge(wx.Frame):
                               size=(500,wx.DefaultSize.y),
                               choices=self.list3)
         self.combo1.SetEditable(False)
+        self.combo1.Bind(wx.wx.EVT_COMBOBOX,self.collect_values)
 #28f2e5ea2bf87eae4bcd5e3fc9021844c01a4df9
         #self.browsebtn=wx.Button(self, 1, 'Browse', (50, 130))
         self.Cancelbtn=wx.Button(self, 3, 'Cancel', (50, 130))
@@ -420,7 +421,7 @@ class LookupConverge(wx.Frame):
     def match_nodeaddr_responder(self):
         pass
     def open_lookupconvergee(self,event):
-        obj=lucgee.Lookupconverge_ext(None,"Lookup@KAD Converge Visualization",self.list,(1440,900)).Show()
+        obj=lucgee.Lookupconverge_ext(None,"Lookup@Kademlia Visualization",self.list,(1440,900)).Show()
 
 #app = wx.App(0)
 #set title and size for the MyFrame instance
