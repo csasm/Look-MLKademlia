@@ -8,6 +8,7 @@ import decimal
 import operator
 import nodeaddr as NodeAddr
 import pickle
+import Lookupconverge_ext as lucgee
 #import queriesgiven as q
 #import responsegiven as r
 #import matchqandr as qr
@@ -25,6 +26,7 @@ class LookupConverge(wx.Frame):
     newResList=[]
     list=[]
     QueResList=[]
+    list3=[]
     
     def __init__(self, parent, mytitle,qrlist, mysize):
         wx.Frame.__init__(self, parent, wx.ID_ANY, mytitle,
@@ -37,6 +39,7 @@ class LookupConverge(wx.Frame):
         self.QueResList=qrlist
         self.CreateStatusBar()
         self.create_controls()
+        self.load_combo()
         #unpicklefile = open('myfile.txt', 'r')
 
 # now load the list that we pickled into a new object
@@ -53,9 +56,39 @@ class LookupConverge(wx.Frame):
     def bindings(self):
         #self.Bind(wx.EVT_BUTTON, self.open_file, id=1)
         self.Bind(wx.EVT_BUTTON, self.collect_values, id=2)
-        self.Bind(wx.EVT_BUTTON, self.close_dlg, id=3)
+        self.Bind(wx.EVT_BUTTON, self.close_dlg, id=3)  
+        self.Bind(wx.EVT_BUTTON, self.open_lookupconvergee, id=4)
         self.lc.Bind(wx.EVT_LIST_ITEM_SELECTED,self.onSelect)
-        self.lc.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK,self.onRightClick)        
+        self.lc.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK,self.onRightClick)  
+              
+    def load_combo(self):
+            self.list2=[]
+            for i in range(len(self.QueResList)):
+                if self.QueResList[i][0].query_type == 'get_peers':
+                    self.list2.append(self.QueResList[i])
+            self.list3=[]
+            def times(f,seq):
+                number=0
+                for i in seq:
+                    temp=i[0].src_addr[0],repr(i[0].infohash)
+                    if f==temp:
+                        number=number+1
+                return number
+            def find(f, seq):
+                for item in seq:
+                    if f==item:                        
+                        return True
+                return False  
+            for i in self.list2:
+                temp=i[0].src_addr[0],repr(i[0].infohash)
+                if not find(temp,self.list3):
+                    if times(temp,self.list2)>10:
+                        self.list3.append(temp)
+            self.combo1.Clear()
+            self.lc.DeleteAllItems()
+            for i in self.list3:
+                self.combo1.Append(i[0]+" : "+i[1])
+            self.combo1.Value="Select * "
 
 
     def load_list(self):
@@ -124,20 +157,24 @@ class LookupConverge(wx.Frame):
 	"""Called when the controls on Window are to be created"""
         # Create the static text widget and set the text
 	#self.filelabel = wx.StaticText(self, label="File:")
-        self.srclabel = wx.StaticText(self, label="Source Addr:")
-        self.infolabel = wx.StaticText(self, label="Infohash:")
+        self.srclabel = wx.StaticText(self, label="Source Addr : Infohash ")
         self.peerslabel = wx.StaticText(self,label="Peers")
 	#Create the Edit Field (or TextCtrl)
 	#self.filetxt = wx.TextCtrl(self, size=wx.Size(200, -1),
                                                       #value=self.fname)
-        self.srctxt = wx.TextCtrl(self, size=wx.Size(100, -1),
-                                  value='192.16.125.181')
-        self.infotxt = wx.TextCtrl(self, size=wx.Size(100, -1),
-                                   value='3ef5cdcbcf57fecf0da0be4cff8d90fee1369649')
+#        self.srctxt = wx.TextCtrl(self, size=wx.Size(100, -1),
+#                                  value='192.16.125.181')
+#        self.infotxt = wx.TextCtrl(self, size=wx.Size(100, -1),
+#                                   value='3ef5cdcbcf57fecf0da0be4cff8d90fee1369649')
+        self.combo1 = wx.ComboBox(self,
+                              size=(500,wx.DefaultSize.y),
+                              choices=self.list3)
+        self.combo1.SetEditable(False)
 #28f2e5ea2bf87eae4bcd5e3fc9021844c01a4df9
         #self.browsebtn=wx.Button(self, 1, 'Browse', (50, 130))
         self.Okbtn=wx.Button(self, 2, 'OK    ', (50, 130))
         self.Cancelbtn=wx.Button(self, 3, 'Cancel', (50, 130))
+        self.GraphicalButton=wx.Button(self, 4, 'Graphical', (50, 130))
 
 
         #create list cotrol
@@ -174,7 +211,6 @@ class LookupConverge(wx.Frame):
         self.h_sizer0 = wx.BoxSizer(wx.HORIZONTAL)
 	self.h_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
         self.h_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.h_sizer3 = wx.BoxSizer(wx.HORIZONTAL)
         self.h_sizer4 = wx.BoxSizer(wx.HORIZONTAL)
         self.h_sizer5 = wx.BoxSizer(wx.HORIZONTAL)
         self.h_sizer6 = wx.BoxSizer(wx.HORIZONTAL)
@@ -190,17 +226,21 @@ class LookupConverge(wx.Frame):
         #self.h_sizer1.AddSpacer((5,0))
         #self.h_sizer1.Add(self.browsebtn, 0)
 
+        self.h_sizer2.AddSpacer((20,0))
         self.h_sizer2.Add(self.srclabel,0)
-        self.h_sizer2.AddSpacer((5,0))
-        self.h_sizer2.Add(self.srctxt,1)
+        self.h_sizer2.AddSpacer((15,0))
+        self.h_sizer2.Add(self.combo1,0)
 
-        self.h_sizer3.Add(self.infolabel,0)
-        self.h_sizer3.AddSpacer((5,0))
-        self.h_sizer3.Add(self.infotxt,1)
+#        self.h_sizer3.Add(self.infolabel,0)
+#        self.h_sizer3.AddSpacer((5,0))
+#        self.h_sizer3.Add(self.infotxt,1)
         
+        self.h_sizer4.AddSpacer((20,0))
         self.h_sizer4.Add(self.Okbtn,0)
-        self.h_sizer4.AddSpacer((5,0))
+        self.h_sizer4.AddSpacer((20,0))
         self.h_sizer4.Add(self.Cancelbtn,0)
+        self.h_sizer4.AddSpacer((20,0))
+        self.h_sizer4.Add(self.GraphicalButton,0)
         
         self.h_sizer5.Add(self.lc, 3, flag=wx.ALL|wx.EXPAND, border=10)
         self.h_sizer6.Add(self.peerslabel,0)
@@ -209,7 +249,6 @@ class LookupConverge(wx.Frame):
         self.v_sizer.Add(self.h_sizer0,0,wx.EXPAND|wx.BOTTOM,10)
         self.v_sizer.Add(self.h_sizer1,0,wx.EXPAND|wx.BOTTOM,10)
         self.v_sizer.Add(self.h_sizer2,0,wx.EXPAND|wx.BOTTOM,10)
-        self.v_sizer.Add(self.h_sizer3,0,wx.EXPAND|wx.BOTTOM,10)
         self.v_sizer.Add(self.h_sizer4,0,wx.EXPAND|wx.BOTTOM,10)
         self.v_sizer.Add(self.h_sizer5,1,wx.ALL|wx.EXPAND,border=10)
         self.v_sizer.Add(self.h_sizer6,0,wx.EXPAND|wx.BOTTOM,10)
@@ -246,9 +285,16 @@ class LookupConverge(wx.Frame):
 
     def collect_values(self,event):
         #fname=self.filetxt.GetValue()
-        source=self.srctxt.GetValue()
-        infoh=self.infotxt.GetValue()
-        self.list_with_src_infohash(source,infoh)
+        selected=self.combo1.GetCurrentSelection()
+        if not selected==-1:
+            src_addr=self.list3[selected][0]
+            info_hash=self.list3[selected][1]
+            self.list1=[]
+            for i in self.list2:  
+                if str(i[0].src_addr[0])==src_addr:
+                    if repr(i[0].infohash)==info_hash:
+                        self.list1.append(i)
+        self.list=self.convert_list(self.list1)
         self.load_list()
         # import the pickle module
 
@@ -289,7 +335,8 @@ class LookupConverge(wx.Frame):
 
     def match_nodeaddr_responder(self):
         pass
-
+    def open_lookupconvergee(self,event):
+        obj=lucgee.Lookupconverge_ext(None,"Lookup@KAD Converge Visualization",self.list,(1440,900)).Show()
 
 #app = wx.App(0)
 #set title and size for the MyFrame instance
