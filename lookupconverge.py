@@ -57,7 +57,6 @@ class LookupConverge(wx.Frame):
         
     def bindings(self):
         #self.Bind(wx.EVT_BUTTON, self.open_file, id=1)
-        self.Bind(wx.EVT_BUTTON, self.collect_values, id=2)
         self.Bind(wx.EVT_BUTTON, self.close_dlg, id=3)  
         self.Bind(wx.EVT_BUTTON, self.open_lookupconvergee, id=4)
         self.lc.Bind(wx.EVT_LIST_ITEM_SELECTED,self.onSelect)
@@ -175,7 +174,6 @@ class LookupConverge(wx.Frame):
         self.combo1.SetEditable(False)
 #28f2e5ea2bf87eae4bcd5e3fc9021844c01a4df9
         #self.browsebtn=wx.Button(self, 1, 'Browse', (50, 130))
-        self.Okbtn=wx.Button(self, 2, 'OK    ', (50, 130))
         self.Cancelbtn=wx.Button(self, 3, 'Cancel', (50, 130))
         self.GraphicalButton=wx.Button(self, 4, 'Graphical', (50, 130))
 
@@ -237,13 +235,10 @@ class LookupConverge(wx.Frame):
 #        self.h_sizer3.Add(self.infolabel,0)
 #        self.h_sizer3.AddSpacer((5,0))
 #        self.h_sizer3.Add(self.infotxt,1)
-        
-        self.h_sizer4.AddSpacer((20,0))
-        self.h_sizer4.Add(self.Okbtn,0)
-        self.h_sizer4.AddSpacer((20,0))
-        self.h_sizer4.Add(self.Cancelbtn,0)
         self.h_sizer4.AddSpacer((20,0))
         self.h_sizer4.Add(self.GraphicalButton,0)
+        self.h_sizer4.AddSpacer((20,0))
+        self.h_sizer4.Add(self.Cancelbtn,0)
         
         self.h_sizer5.Add(self.lc, 3, flag=wx.ALL|wx.EXPAND, border=10)
         self.h_sizer6.Add(self.peerslabel,0)

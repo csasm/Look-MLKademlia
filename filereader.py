@@ -66,9 +66,6 @@ class FileReader:
             return msglist,tidlist,tslist,srclist,dstlist
         else:
             try:
-                open(filename)
-            except IOError:
-                return msglist,tidlist,tslist,srclist,dstlist
                 for (ts, addr, is_outgoing, data) in cPickle.load(open(filename)):
                     if is_outgoing:
                         src_addr = MY_ADDR
