@@ -52,9 +52,9 @@ class Gui(wx.Frame):
     #objR=r.ResponseBisector(filename)
     
 
-    def __init__(self, parent, mytitle, mysize):
+    def __init__(self, parent, mytitle):
         wx.Frame.__init__(self, parent, wx.ID_ANY, mytitle,
-            size=(1000,800))
+            size=(1440,900))
         #self.m=map.Mappings()
         #a=self.obj.match_all_qr()
         #self.list=self.a
@@ -931,10 +931,8 @@ class Gui(wx.Frame):
 app = wx.App(0)
 
 mytitle = "Kademlia Lookup Analyzer-Look@Kad"
-width = 580
-height = 360
 
-Gui(None, mytitle, (width, height)).Show()
+Gui(None, mytitle).Show()
 app.MainLoop()
 
        

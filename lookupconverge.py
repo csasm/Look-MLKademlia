@@ -30,7 +30,7 @@ class LookupConverge(wx.Frame):
     
     def __init__(self, parent, mytitle,qrlist, mysize):
         wx.Frame.__init__(self, parent, wx.ID_ANY, mytitle,
-            size=(1000,800))
+            size=(1440,900))
         #self.m=map.Mappings()
         #self.fname=filename
         self.infohash=''
