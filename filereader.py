@@ -66,6 +66,9 @@ class FileReader:
             return msglist,tidlist,tslist,srclist,dstlist
         else:
             try:
+                open(filename)
+            except IOError:
+                return msglist,tidlist,tslist,srclist,dstlist
                 for (ts, addr, is_outgoing, data) in cPickle.load(open(filename)):
                     if is_outgoing:
                         src_addr = MY_ADDR
@@ -92,8 +95,9 @@ class FileReader:
                 assert len(dstlist) == len(msglist)
                 assert len(dstlist) == len(tidlist)
                 return msglist,tidlist,tslist,srclist,dstlist
-            except:
-                pass
+            
+            except(message.MsgError):
+                return msglist,tidlist,tslist,srclist,dstlist
 
     
 class Data:

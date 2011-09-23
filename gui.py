@@ -136,7 +136,11 @@ class Gui(wx.Frame):
         #objR=r.ResponseBisector(self.filename,self.infohash)
         
         obj=mainclass.MainClass()
-        q,r,e,qre=obj.open_file(self.filename)
+        try:
+            q,r,e,qre=obj.open_file(self.filename)
+        except:
+            print "Unspecified or Unsupported file"
+            return
         #que=objQ.all_queries()
         #res=objR.all_response()
         #print len(q)
