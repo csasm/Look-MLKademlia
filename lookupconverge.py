@@ -6,6 +6,7 @@ import os
 import sys
 import decimal
 import operator
+from copy import copy
 import nodeaddr as NodeAddr
 import pickle
 import Lookupconverge_ext as lucgee
@@ -281,7 +282,93 @@ class LookupConverge(wx.Frame):
         obj=NodeAddr.Nodes(None, 'Nodes Addresses',nodesaddr,nodesdist, 
                                (width, height)).Show()
 
-    
+    def convert_list(self,list):
+        def cmc(a):
+            b=[]
+            for i in a:
+                if i.__class__.__name__!="list":
+                    b.append(copy(i))
+                else:
+                    aa=cmc(i)
+                    b.append(aa)                        
+            return b
+        TempA=[]
+        ListC=[]
+        for i in list:
+            if i[1]!='bogus':
+                TempA.append(cmc(i))
+            else:
+                ListC.append(i)
+        ListA = cmc(TempA)
+        for i in range(len(ListA)):
+            for j in range(i+1,len(ListA)):
+                if float(ListA[i][0].ts) > float(ListA[j][0].ts):
+                    a=ListA[j]
+                    ListA[j]=ListA[i]
+                    ListA[i]=a
+        ListB = cmc(TempA)
+        for i in range(len(ListB)):
+                for j in range(i+1,len(ListB)):
+                        if float(ListB[i][1].ts) > float(ListB[j][1].ts):
+                            a=ListB[j]
+                            ListB[j]=ListB[i]
+                            ListB[i]=a
+        i=0
+        j=0
+        k=0
+        ListD=[]
+        while(i<len(ListA)):
+            if(ListA[i][0].ts<ListB[j][1].ts):
+                if(k<len(ListC)):
+                    if(ListC[k][0].ts<ListA[i][0].ts):
+                        a=cmc(ListC[k])
+                        ListD.append(a)
+                        k=k+1
+                    else:
+                        a=cmc(ListA[i])
+                        a[1].ts="-"
+                        a[1].nodes_distances="-"
+                        ListD.append(a)
+                        i=i+1
+                else:
+                    a=cmc(ListA[i])
+                    a[1].ts="-"
+                    a[1].nodes_distances="-"
+                    ListD.append(a)
+                    i=i+1
+            else:
+                if(k<len(ListC)):
+                    if(ListC[k][0].ts<ListB[j][1].ts):
+                        a=cmc(ListC[k])
+                        ListD.append(a)
+                        k=k+1
+                    else:
+                        a=cmc(ListB[j])
+                        ListD.append(a)
+                        j=j+1
+                else:
+                    a=cmc(ListB[j])
+                    ListD.append(a)
+                    j=j+1
+        while(j<len(ListB)):
+            if(k<len(ListC)):
+                if(ListC[k][0].ts<ListB[j][1].ts):
+                        a=cmc(ListC[k])
+                        ListD.append(a)
+                        k=k+1
+                else:
+                    a=cmc(ListB[j])
+                    ListD.append(a)
+                    j=j+1
+            else:
+                a=cmc(ListB[j])
+                ListD.append(a)
+                j=j+1
+        while(k<len(ListC)):
+            a=cmc(ListC[k])
+            ListD.append(a)
+            k=k+1
+        return ListD    
 
     def collect_values(self,event):
         #fname=self.filetxt.GetValue()
