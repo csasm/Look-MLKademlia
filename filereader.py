@@ -14,7 +14,8 @@ import pymdht.core.message as message
 #import stat
 #import pymdht.identifier as identifier
 #import keyword
-
+MY_ADDR = ("1.1.1.1", 1111)
+import cPickle
 
 class FileReader:
     fname=''
@@ -23,46 +24,76 @@ class FileReader:
         pass
     def file_reader(self,filename):
         msglist=[]
-        f=open(filename)
-        pcap=dpkt.pcap.Reader(f)
         srclist=[]
         tidlist=[]
         dstlist=[]
         tslist=[]
-        c=0
-        for (ts, raw_packet) in pcap:
-            try:
-                ip_packet=dpkt.ethernet.Ethernet(raw_packet).ip     
-                src_addr=(inet_ntoa(ip_packet.src), ip_packet.udp.sport)
+        option=None
+        try:
+            f=open(filename)
+            pcap=dpkt.pcap.Reader(f)
+            option=True
+        except:
+            pass
+        if option==True:              
+            for (ts, raw_packet) in pcap:
+                try:
+                    ip_packet=dpkt.ethernet.Ethernet(raw_packet).ip     
+                    src_addr=(inet_ntoa(ip_packet.src), ip_packet.udp.sport)
+           
+                except (AttributeError):            
+                    continue
+    
+                try:
+                    msg = message.IncomingMsg(ip_packet.data.data,src_addr)
+                    srclist.append(src_addr)
+                    dstlist.append((inet_ntoa(ip_packet.dst), ip_packet.udp.dport))
+                    tslist.append(ts)
+                    msglist.append(msg)
+                    tidlist.append(msg.tid)
        
-            except (AttributeError):
-                # This is not an IP packet
-                c=c+1
-            
-                continue
-
+                    #print msg.version
+                except(message.MsgError):
+                    #print 'ERROR:', ip_packet.data.data
+                    continue
+                #msglist.append(msg)
+                #transid.append(ord(msg.tid[0]))
+            assert len(dstlist) == len(srclist)
+            assert len(dstlist) == len(tslist)
+            assert len(dstlist) == len(msglist)
+            assert len(dstlist) == len(tidlist)    
+            f.close()
+            return msglist,tidlist,tslist,srclist,dstlist
+        else:
             try:
-                msg = message.IncomingMsg(ip_packet.data.data,src_addr)
-                srclist.append(src_addr)
-                dstlist.append((inet_ntoa(ip_packet.dst), ip_packet.udp.dport))
-                tslist.append(ts)
-                msglist.append(msg)
-                tidlist.append(msg.tid)
-   
-                #print msg.version
-            except(message.MsgError):
-                #print 'ERROR:', ip_packet.data.data
-                continue
-            #msglist.append(msg)
-            #transid.append(ord(msg.tid[0]))
-        print c
-        assert len(dstlist) == len(srclist)
-        assert len(dstlist) == len(tslist)
-        assert len(dstlist) == len(msglist)
-        assert len(dstlist) == len(tidlist)
-
-        f.close()
-        return msglist,tidlist,tslist,srclist,dstlist
+                for (ts, addr, is_outgoing, data) in cPickle.load(open(filename)):
+                    if is_outgoing:
+                        src_addr = MY_ADDR
+                        dst_addr = addr
+                    else:
+                        src_addr = addr
+                        dst_addr = MY_ADDR
+                    try:
+                        msg = message.IncomingMsg(data,src_addr)
+                        srclist.append(src_addr)
+                        dstlist.append(dst_addr)
+                        tslist.append(ts)
+                        msglist.append(msg)
+                        tidlist.append(msg.tid)
+           
+                        #print msg.version
+                    except(message.MsgError):
+                        #print 'ERROR:', ip_packet.data.data
+                        continue
+                    #msglist.append(msg)
+                    #transid.append(ord(msg.tid[0]))
+                assert len(dstlist) == len(srclist)
+                assert len(dstlist) == len(tslist)
+                assert len(dstlist) == len(msglist)
+                assert len(dstlist) == len(tidlist)
+                return msglist,tidlist,tslist,srclist,dstlist
+            except:
+                pass
 
     
 class Data:
