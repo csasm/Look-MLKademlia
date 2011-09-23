@@ -40,7 +40,8 @@ class LookupConverge(wx.Frame):
         self.QueResList=qrlist
         self.CreateStatusBar()
         self.create_controls()
-        self.load_combo()
+        if self.QueResList:
+            self.load_combo()
         #unpicklefile = open('myfile.txt', 'r')
 
 # now load the list that we pickled into a new object
