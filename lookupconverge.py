@@ -89,7 +89,8 @@ class LookupConverge(wx.Frame):
             self.lc.DeleteAllItems()
             for i in self.list3:
                 self.combo1.Append(i[0]+" : "+i[1])
-            self.combo1.Value="Select * "
+            self.combo1.SetSelection(0)
+            self.collect_values(None)
 
 
     def load_list(self):
